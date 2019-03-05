@@ -1,9 +1,13 @@
 
 # homebridge-bluetooth forked
 
-This plugin is a bit forked to allow BLE sensors going into deep sleep. 
-To prevent reading actions, the sensor should send notify on startup, the plugin stored that value for homebridge reading actions. if a new notify value comes in, the sored values will be overwritten.
-So the sensor can go into deep sleep an send values as needed.
+This plugin is a bit forked to allow BLE sensors going into deep sleep mode and save battery capacity without any homebridge errors.
+
+To prevent errors by homekit reading actions, the sensor should send BLE notify (0x2904 characteristic) on startup, the plugin cached that value for later homekit reading actions. If a new notify value comes in, the values will be overwritten.
+So the sensor can go into deep sleep and send values as needed. Homebridge read action use the cached value.
+Additionally, the Homebridge.updateReachability is removed, because this feature is no longer supported.
+
+The rest of that plugin is untouched.
 
 # homebridge-bluetooth
 
