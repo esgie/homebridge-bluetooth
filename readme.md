@@ -1,4 +1,10 @@
 
+# homebridge-bluetooth forked
+
+This plugin is a bit forked to allow BLE sensors going into deep sleep. 
+To prevent reading actions, the sensor should send notify on startup, the plugin stored that value for homebridge reading actions. if a new notify value comes in, the sored values will be overwritten.
+So the sensor can go into deep sleep an send values as needed.
+
 # homebridge-bluetooth
 
 
