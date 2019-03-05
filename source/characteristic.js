@@ -7,7 +7,6 @@ module.exports = function (characteristic) {
   return BluetoothCharacteristic;
 };
 
-
 function BluetoothCharacteristic(log, config, prefix) {
   this.log = log;
 
@@ -35,7 +34,6 @@ function BluetoothCharacteristic(log, config, prefix) {
   this.cache.Characteristic = null;
 
 }
-
 
 BluetoothCharacteristic.prototype.connect = function (nobleCharacteristic, homebridgeCharacteristic) {
   this.log.info(this.prefix, "Connected");
@@ -156,7 +154,6 @@ BluetoothCharacteristic.prototype.toBuffer = function (value) {
   return buffer;
 };
 
-
 BluetoothCharacteristic.prototype.fromBuffer = function (buffer) {
   var value;
   switch (this.homebridgeCharacteristic.props['format']) {
@@ -191,7 +188,6 @@ BluetoothCharacteristic.prototype.fromBuffer = function (buffer) {
   }
   return value;
 };
-
 
 BluetoothCharacteristic.prototype.disconnect = function () {
   if (this.nobleCharacteristic && this.homebridgeCharacteristic) {
