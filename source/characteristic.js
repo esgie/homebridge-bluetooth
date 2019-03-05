@@ -31,6 +31,9 @@ function BluetoothCharacteristic(log, config, prefix) {
 
   this.homebridgeCharacteristic = null;
   this.nobleCharacteristic = null;
+  this.cache = {};
+  this.cache.Characteristic = null;
+
 }
 
 
@@ -38,8 +41,9 @@ BluetoothCharacteristic.prototype.connect = function (nobleCharacteristic, homeb
   this.log.info(this.prefix, "Connected");
   this.log.debug(this.prefix, "Characteristic." + this.type + " (" + this.UUID + ")");
   this.homebridgeCharacteristic = homebridgeCharacteristic;
-
   this.nobleCharacteristic = nobleCharacteristic;
+
+
   for (var permission of this.homebridgeCharacteristic.props['perms']) {
     switch (permission) {
       case Characteristic.Perms.READ:
@@ -57,11 +61,12 @@ BluetoothCharacteristic.prototype.connect = function (nobleCharacteristic, homeb
         }
         break;
       case Characteristic.Perms.NOTIFY:
+
         if (this.nobleCharacteristic.properties.indexOf('notify') >= 0) {
           this.nobleCharacteristic.on('read', this.notify.bind(this));
           this.nobleCharacteristic.subscribe(function (error) {
             if (error) {
-              this.log.warn(this.prefix, "Subscribe to bluetooth characteristic failed");
+              this.log.info(this.prefix, "Subscribe to bluetooth characteristic failed");
             }
           }.bind(this));
         } else {
@@ -74,16 +79,17 @@ BluetoothCharacteristic.prototype.connect = function (nobleCharacteristic, homeb
 
 
 BluetoothCharacteristic.prototype.get = function (callback) {
-  this.nobleCharacteristic.read(function (error, buffer) {
-    if (error) {
-      this.log.warn(this.prefix, "Read from bluetooth characteristic failed | " + error);
-      callback(error, null);
-      return
-    }
-    var value = this.fromBuffer(buffer);
-    this.log.info(this.prefix, "Get | " + value);
+//this.nobleCharacteristic.read(function (error, buffer) {
+//    if (error) {
+//      this.log.info(this.prefix, "Read from bluetooth characteristic failed | " + error);
+//      callback(error, null);
+//      return
+//    }
+//    var value = this.fromBuffer(buffer);
+    var value = this.cache.Characteristic;
+    this.log.info(this.prefix, "Cached Value | " + value);
     callback(null, value);
-  }.bind(this));
+  //}.bind(this));
 };
 
 
@@ -97,8 +103,10 @@ BluetoothCharacteristic.prototype.set = function (value, callback) {
 
 BluetoothCharacteristic.prototype.notify = function (buffer, notification) {
   if (notification) {
+    this.cache.Characteristic = null;
     var value = this.fromBuffer(buffer);
     this.log.info(this.prefix, "Notify | " + value);
+    this.cache.Characteristic = value;
     this.homebridgeCharacteristic.updateValue(value, null, this);
   }
 };
