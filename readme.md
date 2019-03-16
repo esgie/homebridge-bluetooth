@@ -3,11 +3,19 @@
 
 This plugin is a bit forked to allow BLE sensors going into deep sleep mode and save battery capacity without any homebridge errors.
 
-To prevent errors by homekit reading actions, the sensor should send BLE notify (0x2904 characteristic) on startup, the plugin cached that value for later homekit reading actions. If a new notify value comes in, the values will be overwritten.
-So the sensor can go into deep sleep and send values as needed. Homebridge read action use the cached value.
-Additionally, the Homebridge.updateReachability is removed, because this feature is no longer supported.
+1) remove homebridge.UpdateReachability, because this feature is not longer supported
+2) add cache.values to prevent unintentionally reading actions. The sensor itself sends values throughout BLE notifications continuously. Homekit reading actions takes the last stored values.  
+3) add write BLE action with hour and minutes (float value, ex. 10.13 as 10:13 hour), if the sensor is connected by noble.
 
-The rest of that plugin is untouched.
+Why this:
+I want to place battery powered sensors outside in the field, so battery capacity is very important. In that case, BLE is a good (better then Wifi) solution. A running ESP32 with BLE consumed around 100 mA, sending packets 140 mA. In deep sleep, or better hibernation mode, the sensor consumed 0.025 mA. I decided to prevent any spontaneous reading by homekit and let the sensor acting. The sensor wake up send the values and go back into deep sleep.
+
+Unfortunatelly, consumer market sensors chips, like ESP32, have a bad RTC (real time clock) stability. The sensor RTC time can drift over minutes at one day. I decided to sync the time with the chip. The chip itself is programmed to wakeup (as an example 2 hours). Then the chip wake up, noble connect the chip and the actual time will be written to the ESP. After that, the sensor send his values and go back into deep sleep (in my case hibernation state).
+Reading the Apple HAP protocol, most characteristic values are uint8 values. In my case, i read humidity, that is "float". With new Date(), i take hours and minutes, bring that to a "hour.minutes" format and send that to the ESP. Unix system often use the "EPOCH" time format. That's integer, with milliseconds since 1970. I dont need year, month, day or milliseconds, just daytime.
+
+For installation i tested that with Raspberry Pi Zero W and Raspberry Pi 3+. Both working. I think the best node.js version is 8 to work with noble and Raspberry. Some installation errors came up, because of useless or outdated libraries, ex. libraries to support external USB sticks.In my case, i use the on board bluetooth module without any problem.
+
+The rest of that plugin is untouched. The following description is just copy/paste pasted from the original.
 
 # homebridge-bluetooth
 
@@ -15,7 +23,7 @@ The rest of that plugin is untouched.
 [![NPM version](https://badge.fury.io/js/homebridge-bluetooth.svg)](https://badge.fury.io/js/homebridge-bluetooth)
 
 [Homebridge](https://github.com/nfarina/homebridge) plugin for exposing services and
-characteristics of nearby [Bluetooth Low Energy](https://www.bluetooth.com/what-is-bluetooth-technology/bluetooth-technology-basics/low-energy) (BLE) peripherals as [HomeKit](https://www.apple.com/ios/home/) accesories. Ideal for wireless DIY home automation projects if you'd like to control them comfortably with Siri on any Apple device.
+characteristics of nearby [Bluetooth Low Energy](https://www.bluetooth.com/what-is-bluetooth-technology/bluetooth-technology-basics/low-energy) (BLE) peripherals as [HomeKit](https://www.apple.com/ios/home/) accessories. Ideal for wireless DIY home automation projects if you'd like to control them comfortably with Siri on any Apple device.
 
 <img src="images/overview.jpg">
 
