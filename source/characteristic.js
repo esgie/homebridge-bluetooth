@@ -1,4 +1,3 @@
-var Characteristic;
 var Chalk = require('chalk');
 
 module.exports = function (characteristic) {
@@ -41,6 +40,16 @@ BluetoothCharacteristic.prototype.connect = function (nobleCharacteristic, homeb
   this.homebridgeCharacteristic = homebridgeCharacteristic;
   this.nobleCharacteristic = nobleCharacteristic;
 
+  if (this.nobleCharacteristic.properties.indexOf('write') >= 0) {
+    //this.homebridgeCharacteristic.props['format'] = 'STRING';
+    var date = new Date();
+    var hour = date.getHours();
+    var minutes = date.getMinutes();
+    var daytime = hour + (minutes / 100);
+    var buffer = this.toBuffer(daytime);
+    this.nobleCharacteristic.write(buffer,false);
+    this.log.info(this.prefix, "Write Time to Sensor: " + daytime);
+  }
 
   for (var permission of this.homebridgeCharacteristic.props['perms']) {
     switch (permission) {
@@ -123,7 +132,7 @@ BluetoothCharacteristic.prototype.toBuffer = function (value) {
       break;
     case Characteristic.Formats.FLOAT: // BLEFloatCharacteristic
       buffer = Buffer.alloc(4);
-      buffer.writeFloatLE(value, 0);
+      buffer.writeFloatBE(value, 0);
       break;
     case Characteristic.Formats.STRING: // BLECharacteristic
       buffer = Buffer.from(value, 'utf8');
