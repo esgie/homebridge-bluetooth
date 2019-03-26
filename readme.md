@@ -15,6 +15,12 @@ Reading the Apple HAP protocol, most characteristic values are uint8 values. In 
 
 For installation i tested that with Raspberry Pi Zero W and Raspberry Pi 3+. Both working. I think the best node.js version is 8 to work with noble and Raspberry. Some installation errors came up, because of useless or outdated libraries, ex. libraries to support external USB sticks.In my case, i use the on board bluetooth module without any problem.
 
+
+# open issue
+
+You can't made a sensor with two or more equal characteristics, as an example one sensor with the bluetooth address XX:XX:XX:XX:XX and two humidiy characteristics.The plugin will overwriting the humidity value each time. 
+
+
 The rest of that plugin is untouched. The following description is just copy/paste pasted from the original.
 
 # homebridge-bluetooth
