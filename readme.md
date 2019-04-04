@@ -1,5 +1,5 @@
 
-# homebridge-bluetooth forked
+# homebridge-bluetooth forked for ESP32 chipsets
 
 This plugin is a forked version of https://github.com/vojtamolda/homebridge-bluetooth, to allow BLE sensors going into deep sleep mode and save battery capacity without any homebridge errors.
 
