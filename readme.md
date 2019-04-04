@@ -1,15 +1,16 @@
 
 # homebridge-bluetooth forked
 
-This plugin is a bit forked to allow BLE sensors going into deep sleep mode and save battery capacity without any homebridge errors.
+This plugin is a forked version of https://github.com/vojtamolda/homebridge-bluetooth, to allow BLE sensors going into deep sleep mode and save battery capacity without any homebridge errors.
+
+## changes
 
 1) remove homebridge.UpdateReachability, because this feature is not longer supported
 2) add cache.values to prevent unintentionally reading actions. The sensor itself sends values throughout BLE notifications continuously. Homekit reading actions takes the last stored values.  
-3) add write BLE action with hour and minutes (float value, ex. 10.13 as 10:13 hour), if the sensor is connected by noble.
+3) if the sensor starts connect the homebridge, the plugin sends hour and minutes (float value, ex. 10.13 as 10:13 hour),to sync the sensor RTC.
 
 Why this:  
-I want to place battery powered sensors outside in the field, so battery capacity is very important. In that case, BLE is a good (better then Wifi) solution. A running ESP32 with BLE consumed around 100 mA, sending packets 140 mA. In deep sleep, or better hibernation mode, the sensor consumed 0.025 mA. I decided to prevent any spontaneous reading by homekit and let the sensor acting. The sensor wake up send the values and go back into deep sleep.
-
+I want to place battery powered sensors outside in the field, so battery capacity is very important. In that case, BLE is a good (better then Wifi) solution. A running ESP32 with BLE consumed around 100 mA, sending packets 140 mA. In deep sleep, or better hibernation mode, the sensor consumed 0.025 mA. I decided to prevent any spontaneous reading by homekit and let the sensor acting.
 Unfortunatelly, consumer market sensors chips, like ESP32, have a bad RTC (real time clock) stability. The sensor RTC time can drift over minutes at one day. I decided to sync the time with the chip. The chip itself is programmed to wakeup (as an example 2 hours). Then the chip wake up, noble connect the chip and the actual time will be written to the ESP. After that, the sensor send his values and go back into deep sleep (in my case hibernation state).
 Reading the Apple HAP protocol, most characteristic values are uint8 values. In my case, i read humidity, that is "float". With new Date(), i take hours and minutes, bring that to a "hour.minutes" format and send that to the ESP. Unix system often use the "EPOCH" time format. That's integer, with milliseconds since 1970. I dont need year, month, day or milliseconds, just daytime.
 
