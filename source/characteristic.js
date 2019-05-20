@@ -44,13 +44,13 @@ BluetoothCharacteristic.prototype.connect = function (nobleCharacteristic, homeb
     //this.homebridgeCharacteristic.props['format'] = 'STRING';
     var date = new Date();
     var today = date.getUTCDate();
-   if (today != this.cache.day)  {
-    var hour = date.getHours();
-    var minutes = date.getMinutes();
-    var daytime = hour + (minutes / 100);
-    var buffer = this.toBuffer(daytime);
-    this.nobleCharacteristic.write(buffer,false);
-    this.log.info(this.prefix, "Write Time to Sensor: " + daytime);
+    if (today != this.cache.day)  {
+      var hour = date.getHours();
+      var minutes = date.getMinutes();
+      var daytime = hour + (minutes / 100);
+      var buffer = this.toBuffer(daytime);
+      this.nobleCharacteristic.write(buffer,false);
+      this.log.info(this.prefix, "Write Time to Sensor: " + daytime);
      }
   this.cache.day = today;  
   }
