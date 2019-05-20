@@ -7,19 +7,19 @@ This plugin is a forked version of https://github.com/vojtamolda/homebridge-blue
 
 1) remove homebridge.UpdateReachability, because this feature is not longer supported
 2) add cache.values to prevent unintentionally reading actions. The sensor itself sends values throughout BLE notifications continuously. Homekit reading actions takes the last stored values.  
-3) if the sensor starts connect the homebridge, the plugin sends hour and minutes (float value, ex. 10.13 as 10:13 hour),to sync the sensor RTC.
+3) if the sensor starts connect the homebridge, the plugin checked against "we have a new day ?", then sends hour and minutes (float value, ex. 10.13 as 10:13 hour),to sync the sensor RTC.
 
 Why this:  
-I want to place battery powered sensors outside in the field, so battery capacity is very important. In that case, BLE is a good (better then Wifi) solution. A running ESP32 with BLE consumed around 100 mA, sending packets 140 mA. In deep sleep, or better hibernation mode, the sensor consumed 0.025 mA. I decided to prevent any spontaneous reading by homekit and let the sensor acting.
-Unfortunatelly, consumer market sensors chips, like ESP32, have a bad RTC (real time clock) stability. The sensor RTC time can drift over minutes at one day. I decided to sync the time with the chip. The chip itself is programmed to wakeup (as an example 2 hours). Then the chip wake up, noble connect the chip and the actual time will be written to the ESP. After that, the sensor send his values and go back into deep sleep (in my case hibernation state).
-Reading the Apple HAP protocol, most characteristic values are uint8 values. In my case, i read humidity, that is "float". With new Date(), i take hours and minutes, bring that to a "hour.minutes" format and send that to the ESP. Unix system often use the "EPOCH" time format. That's integer, with milliseconds since 1970. I dont need year, month, day or milliseconds, just daytime.
+I want to place battery powered sensors outside in the field, so battery capacity is very important. In that case, BLE is a good (better then Wifi) solution. A running ESP32 with BLE consumed around 100 mA, by sending packets around 140 mA. (this values are related to the board design/manufacturer). In deep sleep, or better hibernation mode, the sensor consumed 0.025 mA. I decided to prevent any spontaneous reading by homekit and let the sensor acting.
+Unfortunatelly, consumer market sensors chips, like ESP32, have a bad RTC (real time clock) stability. The sensor RTC time can drift over minutes at one day. I decided to sync the time with the chip each day. The chip itself is programmed to wakeup (as an example 2 hours). Then the chip wake up, noble connect the chip and the actual time will be written to the ESP. After that, the sensor send his values and go back into deep sleep (in my case hibernation state).
+Reading the Apple HAP protocol, most characteristic values are uint8 values. In my case, i read humidity, that is "float". With new Date(), i take hours and minutes, bring that to a "hour.minutes" format and send that to the ESP.  
 
-For installation i tested that with Raspberry Pi Zero W and Raspberry Pi 3+. Both working. I think the best node.js version is 8 to work with noble and Raspberry. Some installation errors came up, because of useless or outdated libraries, ex. libraries to support external USB sticks.In my case, i use the on board bluetooth module without any problem.
+For installation i tested that with Raspberry Pi Zero W and Raspberry Pi 3+. Both working. Some errors by homebridge-bluetooth-plugin came up, because of useless or outdated libraries, ex. libraries to support external USB sticks.In my case, i use the on board bluetooth module without any problem.
 
 
-# open issue
+# knowing issue
 
-You can't made a sensor with two or more equal characteristics, as an example one sensor with the bluetooth address XX:XX:XX:XX:XX and two humidiy characteristics.The plugin will overwriting the humidity value each time. 
+You can't made a sensor with two or more equal characteristics, as an example: one sensor with the bluetooth address XX:XX:XX:XX:XX and two humidiy characteristics.The plugin will overwriting the humidity value each time. 
 
 
 The rest of that plugin is untouched. The following description is just copy/paste pasted from the original.
