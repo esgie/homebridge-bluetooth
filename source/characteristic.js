@@ -51,8 +51,8 @@ BluetoothCharacteristic.prototype.connect = function (nobleCharacteristic, homeb
       var buffer = this.toBuffer(daytime);
       this.nobleCharacteristic.write(buffer,false);
       this.log.info(this.prefix, "Write Time to Sensor: " + daytime);
+      this.cache.day = today;
      }
-  this.cache.day = today;  
   }
 
   for (var permission of this.homebridgeCharacteristic.props['perms']) {
