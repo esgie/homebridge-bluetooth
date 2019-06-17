@@ -31,7 +31,7 @@ function BluetoothCharacteristic(log, config, prefix) {
   this.nobleCharacteristic = null;
   this.cache = {};
   this.cache.Characteristic = null;
-  this.cache.day = null;
+
 }
 
 BluetoothCharacteristic.prototype.connect = function (nobleCharacteristic, homebridgeCharacteristic) {
@@ -39,21 +39,6 @@ BluetoothCharacteristic.prototype.connect = function (nobleCharacteristic, homeb
   this.log.debug(this.prefix, "Characteristic." + this.type + " (" + this.UUID + ")");
   this.homebridgeCharacteristic = homebridgeCharacteristic;
   this.nobleCharacteristic = nobleCharacteristic;
-
-  if (this.nobleCharacteristic.properties.indexOf('write') >= 0) {
-    //this.homebridgeCharacteristic.props['format'] = 'STRING';
-    var date = new Date();
-    var today = date.getUTCDate();
-    if (today != this.cache.day)  {
-      var hour = date.getHours();
-      var minutes = date.getMinutes();
-      var daytime = hour + (minutes / 100);
-      var buffer = this.toBuffer(daytime);
-      this.nobleCharacteristic.write(buffer,false);
-      this.log.info(this.prefix, "Write Time to Sensor: " + daytime);
-      this.cache.day = today;
-     }
-  }
 
   for (var permission of this.homebridgeCharacteristic.props['perms']) {
     switch (permission) {
