@@ -21,7 +21,7 @@
     "homebridge": ">=0.4.6"
   },
   "dependencies": {
-    "noble": ">=1.7.0",
+    "@pruthvikar/noble": "^1.10.12",
     "chalk": ">=1.1.1"
   }
 }
