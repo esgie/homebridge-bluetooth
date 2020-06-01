@@ -21,7 +21,7 @@
     "homebridge": ">=0.4.6"
   },
   "dependencies": {
-    "@pruthvikar/noble": "^1.10.12",
+    "@abandonware/noble": "^1.9.2-9",
     "chalk": ">=1.1.1"
   }
 }
